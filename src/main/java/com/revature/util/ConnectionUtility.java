@@ -8,11 +8,6 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 public class ConnectionUtility {
-  private static Connection conn;
-
-  private ConnectionUtility() {
-  }
-
   public static Connection getConnection() throws SQLException {
     // Legacy driver registration
     /*try {
@@ -22,29 +17,10 @@ public class ConnectionUtility {
       System.out.println("Could not locate driver.");
     }*/
 
-    Properties prop = new Properties();
-    String url;
-    String username;
-    String password;
+    String url = System.getenv("URL");
+    String username = System.getenv("USERNAME");
+    String password = System.getenv("PASSWORD");
 
-    try {
-      prop.load(new FileReader("src/main/resources/application.properties"));
-
-      url = prop.getProperty("url");
-      username = prop.getProperty("username");
-      password = prop.getProperty("password");
-    } catch (IOException ioe) {
-      throw new RuntimeException(ioe);
-    }
-
-    if (conn != null && !conn.isClosed()) {
-      System.out.println("Existing conn");
-      return conn;
-    }
-
-    System.out.println("New conn");
-    conn = DriverManager.getConnection(url, username, password);
-
-    return conn;
+    return DriverManager.getConnection(url, username, password);
   }
 }
