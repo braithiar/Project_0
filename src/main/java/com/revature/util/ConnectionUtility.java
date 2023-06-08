@@ -1,8 +1,11 @@
 package com.revature.util;
 
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
 
 public class ConnectionUtility {
   private static Connection conn;
@@ -19,10 +22,20 @@ public class ConnectionUtility {
       System.out.println("Could not locate driver.");
     }*/
 
-    String url =
-      "jdbc:postgresql://localhost:5432/postgres?currentSchema=project_0";
-    String username = "postgres";
-    String password = "v19%%Admin55!!";
+    Properties prop = new Properties();
+    String url;
+    String username;
+    String password;
+
+    try {
+      prop.load(new FileReader("src/main/resources/application.properties"));
+
+      url = prop.getProperty("url");
+      username = prop.getProperty("username");
+      password = prop.getProperty("password");
+    } catch (IOException ioe) {
+      throw new RuntimeException(ioe);
+    }
 
     if (conn != null && !conn.isClosed()) {
       System.out.println("Existing conn");
