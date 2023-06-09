@@ -13,6 +13,7 @@ public class Purchase {
     this.id = id;
     this.custId = custId;
     this.item = item;
+    itemId = -1;
   }
 
   /**

@@ -130,21 +130,13 @@ public class CustomerDAO implements CustomerDAOInterface {
       query.setString(2, c.getLastName());
       query.setInt(3, c.getProfessionId());
 
-      ResultSet rs = query.executeQuery();
-      ProfessionDAOInterface pDAO = new ProfessionDAO();
-      PurchaseDAOInterface pursDAO = new PurchaseDAO();
+      if (query.executeUpdate() > 0) {
+        logger.info(
+          "Added cid: " + c.getId() + " name: " + c.getFirstName() + " " +
+          c.getLastName());
 
-      logger.info(
-        "Added cid: " + c.getId() + " name: " + c.getFirstName() + " " +
-        c.getLastName());
-
-      return new Customer(
-        rs.getInt("id"),
-        rs.getString("first_name"),
-        rs.getString("last_name"),
-        pDAO.getProfession(rs.getInt("profession_fk"), conn),
-        pursDAO.getCustomerPurchases(rs.getInt("id"), conn)
-      );
+        return c;
+      }
     } catch (SQLException sqle) {
       sqle.printStackTrace();
       logger.warn(

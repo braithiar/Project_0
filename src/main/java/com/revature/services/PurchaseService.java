@@ -32,11 +32,35 @@ public class PurchaseService {
     return null;
   }
 
-  public boolean deletePurchases(int customerId) {
+  public Purchase createPurchase(Purchase p ) {
+    if (p != null && p.getCustId() > 0 && p.getItemId() > 0) {
+      return purDAO.createPurchase(p);
+    }
+
+    return null;
+  }
+
+  public Purchase updatePurchase(Purchase p) {
+    if (p != null && p.getId() > 0) {
+      return purDAO.updatePurchase(p);
+    }
+
+    return null;
+  }
+
+  public List<Purchase> deletePurchases(int customerId) {
     if (customerId > 0) {
       return purDAO.deleteCustomerPurchases(customerId);
     }
 
-    return false;
+    return null;
+  }
+
+  public Purchase deletePurchase(Purchase p) {
+    if (p != null && p.getId() > 0) {
+      return purDAO.deletePurchase(p);
+    }
+
+    return null;
   }
 }

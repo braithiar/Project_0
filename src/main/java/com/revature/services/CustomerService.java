@@ -79,7 +79,7 @@ public class CustomerService {
   }
 
   public Customer addNewCustomer(Customer c) {
-    if (c != null) {
+    if (c != null && c.getProfessionId() > 0) {
       return cDAO.addNewCustomer(c);
     }
 

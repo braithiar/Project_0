@@ -45,4 +45,52 @@ public class ProfessionDAO implements ProfessionDAOInterface {
 
     return null;
   }
+
+  @Override
+  public Profession getAllProfessions() {
+    try (Connection conn = ConnectionUtility.getConnection()) {
+      //TODO code
+    } catch (SQLException sqle) {
+      sqle.printStackTrace();
+      logger.warn(
+        "***Could not connect to database to get ALL professions***");
+    }
+    return null;
+  }
+
+  @Override
+  public Profession createProfession(Profession p) {
+    try (Connection conn = ConnectionUtility.getConnection()) {
+      //TODO code
+    } catch (SQLException sqle) {
+      sqle.printStackTrace();
+      logger.warn(
+        "***Could not connect to database to create profession***");
+    }
+    return null;
+  }
+
+  @Override
+  public Profession updateProfession(Profession p) {
+    try (Connection conn = ConnectionUtility.getConnection()) {
+      //TODO code
+    } catch (SQLException sqle) {
+      sqle.printStackTrace();
+      logger.warn(
+        "***Could not connect to database to update profession***");
+    }
+    return null;
+  }
+
+  @Override
+  public Profession deleteProfession(int pid) {
+    try (Connection conn = ConnectionUtility.getConnection()) {
+      //TODO code
+    } catch (SQLException sqle) {
+      sqle.printStackTrace();
+      logger.warn(
+        "***Could not connect to database to delete profession***");
+    }
+    return null;
+  }
 }

@@ -16,5 +16,11 @@ public interface PurchaseDAOInterface {
 
   Purchase getOnePurchase(int pid);
 
-  boolean deleteCustomerPurchases(int cid);
+  Purchase createPurchase(Purchase p);
+
+  Purchase updatePurchase(Purchase p);
+
+  List<Purchase> deleteCustomerPurchases(int cid);
+
+  Purchase deletePurchase(Purchase p);
 }

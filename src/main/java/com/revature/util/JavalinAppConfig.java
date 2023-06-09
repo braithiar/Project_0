@@ -93,7 +93,9 @@ public class JavalinAppConfig {
                      delete(purCon::handleDelete);
                      path("{pid}", () -> {
                        get(purCon::handleGetOne);
-                       //delete(purCon::handleDeleteAll);
+                     });
+                     path("{cid}", () -> {
+                       delete(purCon::handleDeleteAll);
                      });
                    });
                  });
