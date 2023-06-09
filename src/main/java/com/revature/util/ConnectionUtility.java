@@ -19,7 +19,7 @@ public class ConnectionUtility {
     String username = System.getenv("USERNAME");
     String password = System.getenv("PASSWORD");
 
-    if (conn == null) {
+    if (conn == null || conn.isClosed()) {
       conn = DriverManager.getConnection(url, username, password);
       System.out.println("***New Connection Made***");
       return conn;

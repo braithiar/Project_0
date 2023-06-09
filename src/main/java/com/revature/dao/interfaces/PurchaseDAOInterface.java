@@ -12,5 +12,9 @@ public interface PurchaseDAOInterface {
   List<Purchase> getCustomerPurchases(int cid, Connection conn) throws
     SQLException;
 
+  List<Purchase> getAllPurchases();
+
+  Purchase getOnePurchase(int pid);
+
   boolean deleteCustomerPurchases(int cid);
 }
