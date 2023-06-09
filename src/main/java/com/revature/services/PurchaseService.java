@@ -22,7 +22,7 @@ public class PurchaseService {
 
   public boolean deletePurchases(int customerId) {
     if (customerId > 0) {
-      return pDAO.deletePurchases(customerId);
+      return pDAO.deleteCustomerPurchases(customerId);
     }
 
     return false;

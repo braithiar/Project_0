@@ -18,6 +18,7 @@ public class Customer {
     this.id = id;
     this.firstName = firstName;
     this.lastName = lastName;
+    professionId = -1; // Only used to create new customers
     this.profession = profession;
     this.purchases = purchases;
   }
@@ -33,6 +34,17 @@ public class Customer {
     this.firstName = firstName;
     this.lastName = lastName;
     this.professionId = professionId;
+    profession = null;
+    purchases = null;
+  }
+
+  public Customer(int id, String firstName, String lastName, int professionId) {
+    this.id = id;
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.professionId = professionId;
+    profession = null;
+    purchases = null;
   }
 
   public int getId() {
@@ -63,11 +75,11 @@ public class Customer {
   public String toString() {
     return "Customer{" +
            "id=" + id +
-           ", firstName='" + firstName + '\'' +
-           ", lastName='" + lastName + '\'' +
-           ", professionId=" + professionId +
-           ", profession=" + profession +
-           ", purchases=" + purchases +
+           ", firstName='" + firstName + "',\n" +
+           " lastName='" + lastName + "',\n" +
+           " professionId=" + professionId + ",\n" +
+           " profession=" + profession + ",\n" +
+           " purchases=" + purchases +
            "}\n";
   }
 }

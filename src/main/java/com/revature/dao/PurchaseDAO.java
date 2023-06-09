@@ -18,30 +18,9 @@ public class PurchaseDAO implements PurchaseDAOInterface {
     LoggerFactory.getLogger(PurchaseDAO.class);
 
   @Override
-  public List<Purchase> getCustomerPurchases(int customerId) {
+  public List<Purchase> getCustomerPurchases(int cid) {
     try (Connection conn = ConnectionUtility.getConnection()) {
-      String sql =
-        "SELECT id, customer_fk, item_fk FROM purchases WHERE customer_fk=?";
-      PreparedStatement query = conn.prepareStatement(sql);
-
-      query.setInt(1, customerId);
-
-      ResultSet rs = query.executeQuery();
-      List<Purchase> purchases = new ArrayList<>();
-
-      while (rs.next()) {
-        ItemDAO iDAO = new ItemDAO();
-
-        purchases.add(
-          new Purchase(
-            rs.getInt("id"),
-            rs.getInt("customer_fk"),
-            iDAO.getItem(rs.getInt("item_fk"))
-          )
-        );
-      }
-
-      return purchases;
+      getCustomerPurchases(cid, conn);
     } catch (SQLException sqle) {
       sqle.printStackTrace();
       logger.warn(
@@ -51,12 +30,44 @@ public class PurchaseDAO implements PurchaseDAOInterface {
   }
 
   @Override
-  public boolean deletePurchases(int customerId) {
+  public List<Purchase> getCustomerPurchases(int cid, Connection conn) throws
+    SQLException {
+    String sql =
+      "SELECT id, customer_fk, item_fk FROM purchases WHERE customer_fk=?";
+    PreparedStatement query = conn.prepareStatement(sql);
+
+    query.setInt(1, cid);
+
+    ResultSet rs = query.executeQuery();
+    List<Purchase> purchases = new ArrayList<>();
+    ItemDAO iDAO = new ItemDAO();
+
+    while (rs.next()) {
+
+
+      purchases.add(
+        new Purchase(
+          rs.getInt("id"),
+          rs.getInt("customer_fk"),
+          iDAO.getItem(rs.getInt("item_fk"), conn)
+        )
+      );
+    }
+
+    if (!purchases.isEmpty() && purchases != null) {
+      return purchases;
+    }
+
+    return null;
+  }
+
+  @Override
+  public boolean deleteCustomerPurchases(int cid) {
     try (Connection conn = ConnectionUtility.getConnection()) {
       String sql = "DELETE FROM purchases p WHERE p.customer_fk=?";
       PreparedStatement query = conn.prepareStatement(sql);
 
-      query.setInt(1, customerId);
+      query.setInt(1, cid);
 
       query.executeUpdate();
 

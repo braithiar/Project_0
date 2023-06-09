@@ -18,25 +18,32 @@ public class EnchantmentDAO implements EnchantmentDAOInterface {
   @Override
   public Enchantment getEnchantment(int id) {
     try (Connection conn = ConnectionUtility.getConnection()) {
-      String sql = "SELECT name, description FROM enchantments WHERE id=?";
-      PreparedStatement query = conn.prepareStatement(sql);
-
-      query.setInt(1, id);
-
-      ResultSet rs = query.executeQuery();
-
-      if (rs.next()) {
-        return new Enchantment(
-          id,
-          rs.getString("name"),
-          rs.getString("description")
-        );
-      }
+      return getEnchantment(id, conn);
     } catch (SQLException sqle) {
       sqle.printStackTrace();
       logger.warn(
         "***Could not connect to database to get enchantment by ID***");
     }
+    return null;
+  }
+
+  @Override
+  public Enchantment getEnchantment(int id, Connection conn) throws SQLException {
+    String sql = "SELECT name, description FROM enchantments WHERE id=?";
+    PreparedStatement query = conn.prepareStatement(sql);
+
+    query.setInt(1, id);
+
+    ResultSet rs = query.executeQuery();
+
+    if (rs.next()) {
+      return new Enchantment(
+        id,
+        rs.getString("name"),
+        rs.getString("description")
+      );
+    }
+
     return null;
   }
 }

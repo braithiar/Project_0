@@ -18,24 +18,31 @@ public class ProfessionDAO implements ProfessionDAOInterface {
   @Override
   public Profession getProfession(int id) {
     try (Connection conn = ConnectionUtility.getConnection()) {
-      String sql = "SELECT profession FROM professions WHERE id=?";
-      PreparedStatement query = conn.prepareStatement(sql);
-
-      query.setInt(1, id);
-
-      ResultSet rs = query.executeQuery();
-
-      if (rs.next()) {
-        return new Profession(
-          id,
-          rs.getString("profession")
-        );
-      }
+      getProfession(id, conn);
     } catch (SQLException sqle) {
       sqle.printStackTrace();
       logger.warn(
         "***Could not connect to database to get profession by ID***");
     }
+    return null;
+  }
+
+  @Override
+  public Profession getProfession(int id, Connection conn) throws SQLException {
+    String sql = "SELECT profession FROM professions WHERE id=?";
+    PreparedStatement query = conn.prepareStatement(sql);
+
+    query.setInt(1, id);
+
+    ResultSet rs = query.executeQuery();
+
+    if (rs.next()) {
+      return new Profession(
+        id,
+        rs.getString("profession")
+      );
+    }
+
     return null;
   }
 }

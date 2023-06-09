@@ -1,13 +1,11 @@
 package com.revature.util;
 
-import java.io.FileReader;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Properties;
 
 public class ConnectionUtility {
+  private static Connection conn = null;
   public static Connection getConnection() throws SQLException {
     // Legacy driver registration
     /*try {
@@ -21,6 +19,13 @@ public class ConnectionUtility {
     String username = System.getenv("USERNAME");
     String password = System.getenv("PASSWORD");
 
-    return DriverManager.getConnection(url, username, password);
+    if (conn == null) {
+      conn = DriverManager.getConnection(url, username, password);
+      System.out.println("***New Connection Made***");
+      return conn;
+    }
+
+    System.out.println("***Existing Connection Used***");
+    return conn;
   }
 }

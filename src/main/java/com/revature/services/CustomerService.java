@@ -26,16 +26,13 @@ public class CustomerService {
       return null;
     }
 
-    StringBuilder formattedFName = new StringBuilder("");
-    StringBuilder formattedLName = new StringBuilder("");
+    char[] fNameChars = firstName.toLowerCase().toCharArray();
+    StringBuilder firstFormatted = new StringBuilder();
 
-    /*char[] fNameChars = firstName.toCharArray();
-    StringBuilder firstFormatted = new StringBuilder(
-      Character.toUpperCase(fNameChars[0])
-    );
+    firstFormatted.append(Character.toUpperCase(fNameChars[0]));
 
     for (int i = 1; i < fNameChars.length; ++i) {
-      if (fNameChars[i-1] == ' ') {
+      if (fNameChars[i - 1] == ' ') {
         firstFormatted.append(Character.toUpperCase(fNameChars[i]));
         continue;
       }
@@ -43,44 +40,65 @@ public class CustomerService {
       firstFormatted.append(fNameChars[i]);
     }
 
-    char[] lNameChars = lastName.toCharArray();
-    StringBuilder lastFormatted = new StringBuilder(
-      Character.toUpperCase(lNameChars[0])
-    );
+    char[] lNameChars = lastName.toLowerCase().toCharArray();
+    StringBuilder lastFormatted = new StringBuilder();
+    int index = 1;
 
-    for (int i = 1; i < lNameChars.length; ++i) {
-      if (fNameChars[i-1] == ' ') {
-        firstFormatted.append(Character.toUpperCase(lNameChars[i]));
+    if (lastName.toLowerCase().startsWith("mc") ||
+        lastName.toLowerCase().startsWith("o'")) {
+      lastFormatted.append(Character.toUpperCase(lNameChars[0]));
+      lastFormatted.append(lNameChars[1]);
+      lastFormatted.append(Character.toUpperCase(lNameChars[2]));
+
+      index = 3;
+    } else {
+      lastFormatted = new StringBuilder(
+        Character.toUpperCase(lNameChars[0])
+      );
+    }
+
+    for (int i = index; i < lNameChars.length; ++i) {
+      if (lNameChars[i - 1] == ' ') {
+        lastFormatted.append(Character.toUpperCase(lNameChars[i]));
         continue;
       }
 
-      firstFormatted.append(lNameChars[i]);
-    }*/
+      lastFormatted.append(lNameChars[i]);
+    }
+
+    if (firstFormatted.length() > 0 && lastFormatted.length() > 0) {
+      return cDAO.getCustomer(firstFormatted.toString(),
+                              lastFormatted.toString());
+    }
 
     return null;
   }
 
   public List<Customer> getAllCustomers() {
+    return cDAO.getAllCustomers();
+  }
+
+  public Customer addNewCustomer(Customer c) {
+    if (c != null) {
+      return cDAO.addNewCustomer(c);
+    }
+
     return null;
   }
 
-  public boolean addNewCustomer(Customer c) {
-    return false;
-  }
+  public Customer updateCustomer(Customer c) {
+    if (c != null) {
+      return cDAO.updateCustomer(c);
+    }
 
-  public boolean updateCustomerFirstName(int id, String newFirstName) {
-    return false;
-  }
-
-  public boolean updateCustomerLastName(int id, String newLastName) {
-    return false;
-  }
-
-  public boolean updateCustomerProfession(int id, int newProfessionId) {
-    return false;
+    return null;
   }
 
   public boolean deleteCustomer(int id) {
+    if (id > 0) {
+      cDAO.deleteCustomer(id);
+    }
+
     return false;
   }
 }

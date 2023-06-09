@@ -1,6 +1,8 @@
 package com.revature.dao;
 
 import com.revature.dao.interfaces.CustomerDAOInterface;
+import com.revature.dao.interfaces.ProfessionDAOInterface;
+import com.revature.dao.interfaces.PurchaseDAOInterface;
 import com.revature.models.Customer;
 import com.revature.util.ConnectionUtility;
 import org.slf4j.Logger;
@@ -15,13 +17,13 @@ public class CustomerDAO implements CustomerDAOInterface {
     LoggerFactory.getLogger(CustomerDAO.class);
 
   @Override
-  public Customer getCustomer(int id) {
+  public Customer getCustomer(int cid) {
     try (Connection conn = ConnectionUtility.getConnection()) {
       String sql =
         "SELECT first_name, last_name, profession_fk FROM customers WHERE id=?";
       PreparedStatement query = conn.prepareStatement(sql);
 
-      query.setInt(1, id);
+      query.setInt(1, cid);
 
       ResultSet rs = query.executeQuery();
 
@@ -30,11 +32,11 @@ public class CustomerDAO implements CustomerDAOInterface {
         PurchaseDAO purDAO = new PurchaseDAO();
 
         return new Customer(
-          id,
+          cid,
           rs.getString("first_name"),
           rs.getString("last_name"),
-          pDAO.getProfession(rs.getInt("profession_fk")),
-          purDAO.getCustomerPurchases(id)
+          pDAO.getProfession(rs.getInt("profession_fk"), conn),
+          purDAO.getCustomerPurchases(cid, conn)
         );
       }
     } catch (SQLException sqle) {
@@ -66,8 +68,8 @@ public class CustomerDAO implements CustomerDAOInterface {
           id,
           firstName,
           lastName,
-          pDAO.getProfession(rs.getInt("profession_fk")),
-          purDAO.getCustomerPurchases(id)
+          pDAO.getProfession(rs.getInt("profession_fk"), conn),
+          purDAO.getCustomerPurchases(id, conn)
         );
       }
     } catch (SQLException sqle) {
@@ -80,6 +82,7 @@ public class CustomerDAO implements CustomerDAOInterface {
 
   @Override
   public List<Customer> getAllCustomers() {
+    long timeTaken = System.currentTimeMillis();
     try (Connection conn = ConnectionUtility.getConnection()) {
       String sql =
         "SELECT id, first_name, last_name, profession_fk FROM customers";
@@ -87,10 +90,10 @@ public class CustomerDAO implements CustomerDAOInterface {
 
       ResultSet rs = query.executeQuery(sql);
       List<Customer> customers = new ArrayList<>();
+      ProfessionDAO pDAO = new ProfessionDAO();
+      PurchaseDAO purDAO = new PurchaseDAO();
 
       while (rs.next()) {
-        ProfessionDAO pDAO = new ProfessionDAO();
-        PurchaseDAO purDAO = new PurchaseDAO();
         int id = rs.getInt("id");
 
         customers.add(
@@ -98,11 +101,15 @@ public class CustomerDAO implements CustomerDAOInterface {
             id,
             rs.getString("first_name"),
             rs.getString("last_name"),
-            pDAO.getProfession(rs.getInt("profession_fk")),
-            purDAO.getCustomerPurchases(id)
+            pDAO.getProfession(rs.getInt("profession_fk"), conn),
+            purDAO.getCustomerPurchases(id, conn)
           )
         );
       }
+
+      timeTaken = System.currentTimeMillis() - timeTaken;
+      logger.info("Took " + timeTaken + "ms to retrieve all customers.");
+
       return customers;
     } catch (SQLException sqle) {
       sqle.printStackTrace();
@@ -113,7 +120,7 @@ public class CustomerDAO implements CustomerDAOInterface {
   }
 
   @Override
-  public boolean addNewCustomer(Customer c) {
+  public Customer addNewCustomer(Customer c) {
     try (Connection conn = ConnectionUtility.getConnection()) {
       String sql =
         "INSERT INTO customers (first_name, last_name, profession_fk) VALUES (?, ?, ?)";
@@ -123,85 +130,115 @@ public class CustomerDAO implements CustomerDAOInterface {
       query.setString(2, c.getLastName());
       query.setInt(3, c.getProfessionId());
 
-      query.executeUpdate();
+      ResultSet rs = query.executeQuery();
+      ProfessionDAOInterface pDAO = new ProfessionDAO();
+      PurchaseDAOInterface pursDAO = new PurchaseDAO();
 
-      return true;
+      logger.info(
+        "Added cid: " + c.getId() + " name: " + c.getFirstName() + " " +
+        c.getLastName());
+
+      return new Customer(
+        rs.getInt("id"),
+        rs.getString("first_name"),
+        rs.getString("last_name"),
+        pDAO.getProfession(rs.getInt("profession_fk"), conn),
+        pursDAO.getCustomerPurchases(rs.getInt("id"), conn)
+      );
     } catch (SQLException sqle) {
       sqle.printStackTrace();
       logger.warn(
         "***Could not connect to database to add new customer***");
     }
-    return false;
+    return null;
   }
 
   @Override
-  public boolean updateCustomerFirstName(int id, String newFirstName) {
+  public Customer updateCustomer(Customer c) {
     try (Connection conn = ConnectionUtility.getConnection()) {
-      String sql = "UPDATE customers SET first_name=? WHERE id=?";
-      PreparedStatement query = conn.prepareStatement(sql);
+      String select =
+        "SELECT id, first_name, last_name, profession_fk FROM customers WHERE id=?";
+      PreparedStatement query = conn.prepareStatement(select);
 
-      query.setString(1, newFirstName);
-      query.setInt(2, id);
+      query.setInt(1, c.getId());
 
-      query.executeUpdate();
+      ResultSet rs = query.executeQuery();
+      Customer dbRecord = null;
+      ProfessionDAOInterface pDAO = new ProfessionDAO();
+      PurchaseDAOInterface pursDAO = new PurchaseDAO();
 
-      return true;
+      if (rs.next()) {
+        dbRecord = new Customer(
+          rs.getInt("id"),
+          rs.getString("first_name"),
+          rs.getString("last_name"),
+          pDAO.getProfession(rs.getInt("profession_fk"), conn),
+          pursDAO.getCustomerPurchases(rs.getInt("id"), conn)
+        );
+      }
+
+      if (c.getId() != dbRecord.getId()) {
+        return null;
+      }
+
+      if (!c.getFirstName().isEmpty() &&
+          !c.getFirstName().equals(dbRecord.getFirstName())) {
+        String sql = "UPDATE customers SET first_name=? WHERE id=?";
+        query = conn.prepareStatement(sql);
+
+        query.setString(1, c.getFirstName());
+        query.setInt(2, c.getId());
+
+        query.executeUpdate();
+      }
+
+      if (!c.getLastName().isEmpty() &&
+          !c.getLastName().equals(dbRecord.getLastName())) {
+        String sql = "UPDATE customers SET last_name=? WHERE id=?";
+        query = conn.prepareStatement(sql);
+
+        query.setString(1, c.getLastName());
+        query.setInt(2, c.getId());
+
+        query.executeUpdate();
+      }
+
+      if (c.getProfessionId() != -1 ||
+          c.getProfession() != null &&
+          c.getProfessionId() != dbRecord.getProfessionId() ||
+          c.getProfession().getId() != dbRecord.getProfession().getId()) {
+        String sql = "UPDATE customers SET profession_fk=? WHERE id=?";
+        query = conn.prepareStatement(sql);
+
+        if (c.getProfessionId() != -1) {
+          query.setInt(1, c.getProfessionId());
+          query.setInt(2, c.getId());
+        } else if (c.getProfession() != null) {
+          query.setInt(1, c.getProfession().getId());
+          query.setInt(2, c.getId());
+        }
+
+        query.executeUpdate();
+      }
+
+      logger.info(
+        "Successfully updated " + c.getFirstName() + " " + c.getLastName() +
+        "'s personal information.");
+      return c;
     } catch (SQLException sqle) {
       sqle.printStackTrace();
       logger.warn(
-        "***Could not connect to database to update customer first name by ID***");
+        "***Could not connect to the database to update customer information***");
     }
-    return false;
-  }
 
-  @Override
-  public boolean updateCustomerLastName(int id, String newLastName) {
-    try (Connection conn = ConnectionUtility.getConnection()) {
-      String sql = "UPDATE customers SET last_name=? WHERE id=?";
-      PreparedStatement query = conn.prepareStatement(sql);
-
-      query.setString(1, newLastName);
-      query.setInt(2, id);
-
-      query.executeUpdate();
-
-      return true;
-    } catch (SQLException sqle) {
-      sqle.printStackTrace();
-      logger.warn(
-        "***Could not connect to database to update customer last name by ID***");
-    }
-    return false;
-  }
-
-  @Override
-  public boolean updateCustomerProfession(int id, int newProfessionId) {
-    try (Connection conn = ConnectionUtility.getConnection()) {
-      String sql = "UPDATE customers SET profession_fk=? WHERE id=?";
-      PreparedStatement query = conn.prepareStatement(sql);
-
-      query.setInt(1, newProfessionId);
-      query.setInt(2, id);
-
-      query.executeUpdate();
-
-      return true;
-    } catch (SQLException sqle) {
-      sqle.printStackTrace();
-      logger.warn(
-        "***Could not connect to database to update customer profession***");
-    }
-    return false;
+    return null;
   }
 
   @Override
   public boolean deleteCustomer(int id) {
-    // TODO: implement in CustomerService/PurchaseService
     PurchaseDAO pDAO = new PurchaseDAO();
 
-    if (!pDAO.deletePurchases(id)) {
-      return false;
-    }
+    pDAO.deleteCustomerPurchases(id);
 
     try (Connection conn = ConnectionUtility.getConnection()) {
       String sql =
@@ -218,6 +255,7 @@ public class CustomerDAO implements CustomerDAOInterface {
       logger.warn(
         "***Could not connect to database to delete customer by ID***");
     }
+
     return false;
   }
 }
