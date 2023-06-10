@@ -12,12 +12,5 @@ public class Launcher {
     JavalinAppConfig app = new JavalinAppConfig();
 
     app.start(7070);
-
-    CustomerService cs = new CustomerService(new CustomerDAO());
-    List<Customer> custs = cs.getAllCustomers();
-
-    for (Customer c : custs) {
-      System.out.println(c);
-    }
   }
 }

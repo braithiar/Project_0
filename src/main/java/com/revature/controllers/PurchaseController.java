@@ -17,7 +17,7 @@ public class PurchaseController {
   public void handleGetAll(Context ctx) {
     List<Purchase> purchases = purServ.getAllPurchases();
 
-    if (purchases != null) {
+    if (purchases != null && purchases.size() > 0) {
       ctx.json(purchases);
     } else {
       ctx.status(400);
@@ -73,7 +73,7 @@ public class PurchaseController {
     if (deleted != null) {
       ctx.json(deleted);
     } else {
-      ctx.status(400);
+      ctx.status(404);
     }
   }
 

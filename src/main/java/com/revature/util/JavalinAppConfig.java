@@ -78,13 +78,17 @@ public class JavalinAppConfig {
                      get(itCon::handleGetAll);
                      post(itCon::handleCreate);
                      put(itCon::handleUpdate);
-                     delete(itCon::handleDelete);
+                     path("{id}", () -> {
+                       get(itCon::handleGetOne);
+                     });
                    });
                    path("professions", () -> {
                      get(pCon::handleGetAll);
                      post(pCon::handleCreate);
                      put(pCon::handleUpdate);
-                     delete(pCon::handleDelete);
+                     path("{pid}", () -> {
+                       get(pCon::handleGetOne);
+                     });
                    });
                    path("purchases", () -> {
                      get(purCon::handleGetAll);

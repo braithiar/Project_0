@@ -41,8 +41,6 @@ public class PurchaseDAO implements PurchaseDAOInterface {
     ItemDAO iDAO = new ItemDAO();
 
     while (rs.next()) {
-
-
       purchases.add(
         new Purchase(
           rs.getInt("id"),
