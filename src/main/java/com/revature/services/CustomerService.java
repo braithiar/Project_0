@@ -96,7 +96,7 @@ public class CustomerService {
 
   public boolean deleteCustomer(int id) {
     if (id > 0) {
-      cDAO.deleteCustomer(id);
+      return cDAO.deleteCustomer(id);
     }
 
     return false;

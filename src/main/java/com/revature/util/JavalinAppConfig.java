@@ -54,9 +54,9 @@ public class JavalinAppConfig {
                      get(cCon::handleGetAll);
                      post(cCon::handleCreate);
                      put(cCon::handleUpdate);
-                     delete(cCon::handleDelete);
                      path("{cid}", () -> {
                        get(cCon::handleGetOne);
+                       delete(cCon::handleDelete);
                      });
                    });
                    path("enchantments", () -> {
@@ -69,7 +69,6 @@ public class JavalinAppConfig {
                      get(iCon::handleGetAll);
                      post(iCon::handleCreate);
                      put(iCon::handleUpdate);
-                     delete(iCon::handleDelete);
                      path("{id}", () -> {
                        get(iCon::handleGetOne);
                      });

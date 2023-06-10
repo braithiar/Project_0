@@ -9,8 +9,7 @@ import java.util.List;
 public interface ItemDAOInterface {
   Item getItem(int id);
   Item getItem(int id, Connection conn) throws SQLException;
-  List<Item> getAllItemd();
+  List<Item> getAllItems();
   Item addItem(Item i);
   Item updateItem(Item i);
-  boolean deleteItem(int id);
 }

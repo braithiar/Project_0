@@ -21,6 +21,8 @@ public class Item {
     this.price = price;
     this.type = type;
     this.enchant = enchant;
+    itemTypeId = -1;
+    enchantId = -1;
   }
 
   /**

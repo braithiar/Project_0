@@ -180,7 +180,7 @@ public class PurchaseDAO implements PurchaseDAOInterface {
         query.executeUpdate();
       }
 
-      if (p.getItemId() > 0 && p.getItemId() != dbRecord.getItemId()) {
+      if (p.getItemId() > 0 && p.getItemId() != dbRecord.getItem().getId()) {
         String sql =
           "UPDATE purchases SET item_fk=? WHERE id=?";
 

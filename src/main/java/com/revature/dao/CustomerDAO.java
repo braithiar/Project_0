@@ -5,6 +5,7 @@ import com.revature.dao.interfaces.ProfessionDAOInterface;
 import com.revature.dao.interfaces.PurchaseDAOInterface;
 import com.revature.models.Customer;
 import com.revature.util.ConnectionUtility;
+import org.postgresql.replication.ReplicationSlotInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -123,19 +124,31 @@ public class CustomerDAO implements CustomerDAOInterface {
   public Customer addNewCustomer(Customer c) {
     try (Connection conn = ConnectionUtility.getConnection()) {
       String sql =
-        "INSERT INTO customers (first_name, last_name, profession_fk) VALUES (?, ?, ?)";
+        "INSERT INTO customers (first_name, last_name, profession_fk) VALUES (?, ?, ?) RETURNING *";
       PreparedStatement query = conn.prepareStatement(sql);
 
       query.setString(1, c.getFirstName());
       query.setString(2, c.getLastName());
       query.setInt(3, c.getProfessionId());
 
-      if (query.executeUpdate() > 0) {
+      ResultSet rs = query.executeQuery();
+      ProfessionDAO pDAO = new ProfessionDAO();
+      PurchaseDAO purDAO = new PurchaseDAO();
+
+      if (rs.next()) {
+        int cid = rs.getInt("id");
+
         logger.info(
-          "Added cid: " + c.getId() + " name: " + c.getFirstName() + " " +
+          "Added cid: " + cid + " name: " + c.getFirstName() + " " +
           c.getLastName());
 
-        return c;
+        return new Customer(
+          cid,
+          c.getFirstName(),
+          c.getLastName(),
+          pDAO.getProfession(c.getProfessionId()),
+          purDAO.getCustomerPurchases(cid)
+        );
       }
     } catch (SQLException sqle) {
       sqle.printStackTrace();
@@ -239,9 +252,9 @@ public class CustomerDAO implements CustomerDAOInterface {
 
       query.setInt(1, id);
 
-      query.executeUpdate();
-
-      return true;
+      if (query.executeUpdate() > 0) {
+        return true;
+      }
     } catch (SQLException sqle) {
       sqle.printStackTrace();
       logger.warn(
