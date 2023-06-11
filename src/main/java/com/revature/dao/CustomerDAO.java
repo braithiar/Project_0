@@ -5,7 +5,6 @@ import com.revature.dao.interfaces.ProfessionDAOInterface;
 import com.revature.dao.interfaces.PurchaseDAOInterface;
 import com.revature.models.Customer;
 import com.revature.util.ConnectionUtility;
-import org.postgresql.replication.ReplicationSlotInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

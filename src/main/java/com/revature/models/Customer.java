@@ -73,13 +73,13 @@ public class Customer {
 
   @Override
   public String toString() {
-    return "Customer{" +
+    return "\nCustomer{\n" +
            "id=" + id +
            ", firstName='" + firstName + "',\n" +
            " lastName='" + lastName + "',\n" +
            " professionId=" + professionId + ",\n" +
            " profession=" + profession + ",\n" +
            " purchases=" + purchases +
-           "}\n";
+           "\n}\n";
   }
 }
