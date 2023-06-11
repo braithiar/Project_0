@@ -181,11 +181,11 @@ public class CustomerDAO implements CustomerDAOInterface {
         );
       }
 
-      if (c.getId() != dbRecord.getId()) {
+      if (dbRecord == null || c.getId() != dbRecord.getId()) {
         return null;
       }
 
-      if (!c.getFirstName().isEmpty() &&
+      if (c.getFirstName() != null &&
           !c.getFirstName().equals(dbRecord.getFirstName())) {
         String sql = "UPDATE customers SET first_name=? WHERE id=?";
         query = conn.prepareStatement(sql);
@@ -196,7 +196,7 @@ public class CustomerDAO implements CustomerDAOInterface {
         query.executeUpdate();
       }
 
-      if (!c.getLastName().isEmpty() &&
+      if (c.getLastName() != null &&
           !c.getLastName().equals(dbRecord.getLastName())) {
         String sql = "UPDATE customers SET last_name=? WHERE id=?";
         query = conn.prepareStatement(sql);
@@ -207,9 +207,9 @@ public class CustomerDAO implements CustomerDAOInterface {
         query.executeUpdate();
       }
 
-      if (c.getProfessionId() != -1 ||
-          c.getProfession() != null &&
+      if (c.getProfessionId() > 0 &&
           c.getProfessionId() != dbRecord.getProfessionId() ||
+          c.getProfession() != null &&
           c.getProfession().getId() != dbRecord.getProfession().getId()) {
         String sql = "UPDATE customers SET profession_fk=? WHERE id=?";
         query = conn.prepareStatement(sql);
@@ -225,10 +225,26 @@ public class CustomerDAO implements CustomerDAOInterface {
         query.executeUpdate();
       }
 
+      query = conn.prepareStatement(select);
+
+      query.setInt(1, c.getId());
+
+      rs = query.executeQuery();
+
+      if (rs.next()) {
+        dbRecord = new Customer(
+          rs.getInt("id"),
+          rs.getString("first_name"),
+          rs.getString("last_name"),
+          pDAO.getProfession(rs.getInt("profession_fk"), conn),
+          pursDAO.getCustomerPurchases(rs.getInt("id"), conn)
+        );
+      }
+
       logger.info(
         "Successfully updated " + c.getFirstName() + " " + c.getLastName() +
         "'s personal information.");
-      return c;
+      return dbRecord;
     } catch (SQLException sqle) {
       sqle.printStackTrace();
       logger.warn(

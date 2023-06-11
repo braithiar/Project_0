@@ -87,7 +87,7 @@ public class CustomerService {
   }
 
   public Customer updateCustomer(Customer c) {
-    if (c != null && c.getProfessionId() >= 0) {
+    if (c != null && c.getId() >= 0 && c.getProfessionId() > 0) {
       return cDAO.updateCustomer(c);
     }
 

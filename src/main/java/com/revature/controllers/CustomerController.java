@@ -92,8 +92,8 @@ public class CustomerController {
       ctx.json(updated);
     } else {
       logger.warn(
-        "{}#handleUpdate(Context) was unable to update customer with {}",
-        CustomerController.class, toUpdate.toString());
+        "{}#handleUpdate(Context) was unable to update customer with id {}",
+        CustomerController.class, toUpdate.getId());
       ctx.status(400);
     }
   }
