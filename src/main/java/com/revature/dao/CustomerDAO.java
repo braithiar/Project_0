@@ -82,6 +82,14 @@ public class CustomerDAO implements CustomerDAOInterface {
 
   @Override
   public List<Customer> getAllCustomers() {
+    /*
+     * I have 100 customers in my database, each with several purchases that need
+     * to be retrieved, as well. It took over 14 seconds to get every customer
+     * because the connection would close every time it passed through a try-with-resources.
+     * Solved the problem by overloading some of my method calls to take a Connection,
+     * and passed it along to keep it open. This reduced the retrieval time to
+     * 250ish milliseconds.
+     */
     long timeTaken = System.currentTimeMillis();
     try (Connection conn = ConnectionUtility.getConnection()) {
       String sql =

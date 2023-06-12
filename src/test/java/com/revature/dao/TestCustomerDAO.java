@@ -1,8 +1,6 @@
 package com.revature.dao;
 
 import com.revature.models.Customer;
-import com.revature.models.Profession;
-import com.revature.models.Purchase;
 import com.revature.services.CustomerService;
 import com.revature.services.ProfessionService;
 import com.revature.services.PurchaseService;
@@ -10,20 +8,17 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
-import java.sql.Connection;
-import java.util.ArrayList;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class TestCustomerDAO {
-  CustomerDAO mockCustDAO;
-  ProfessionDAO mockProDAO;
-  PurchaseDAO mockPurDAO;
-  CustomerService cServ;
-  ProfessionService pServ;
-  PurchaseService purServ;
+  private CustomerDAO mockCustDAO;
+  private ProfessionDAO mockProDAO;
+  private PurchaseDAO mockPurDAO;
+  private CustomerService cServ;
+  private ProfessionService pServ;
+  private PurchaseService purServ;
 
   @BeforeAll
   public void setup() {
