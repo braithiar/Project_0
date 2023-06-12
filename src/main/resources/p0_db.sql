@@ -1,32 +1,22 @@
 DROP TABLE enchantments, professions, customers, purchases, items, item_types; 
 
-SELECT c.first_name || ' ' || c.last_name "name", SUM(i.price)
-FROM customers c, purchases p, items i 
-WHERE c.id = p.customer_fk AND p.item_fk = i.id
-GROUP BY c.first_name, c.last_name;
-
-SELECT SUM(price) FROM items 
-JOIN purchases ON items.id = purchases.item_fk 
-JOIN customers ON customers.id = purchases.customer_fk
-WHERE customers.id = 18;
-
 CREATE TABLE "enchantments" (
   "id" serial,
-  "name" text,
-  "description" text,
+  "name" TEXT NOT NULL,
+  "description" TEXT NOT NULL,
   PRIMARY KEY ("id")
 );
 
 CREATE TABLE "professions" (
   "id" serial,
-  "profession" text,
+  "profession" TEXT UNIQUE NOT NULL,
   PRIMARY KEY ("id")
 );
 
 CREATE TABLE "customers" (
   "id" serial,
-  "first_name" text,
-  "last_name" text,
+  "first_name" TEXT NOT NULL,
+  "last_name" TEXT NOT NULL,
   "profession_fk" int NOT NULL,
   PRIMARY KEY ("id"),
   CONSTRAINT "FK_customers.profession_fk"
@@ -36,15 +26,15 @@ CREATE TABLE "customers" (
 
 CREATE TABLE "item_types" (
   "id" serial,
-  "type" text,
+  "type" TEXT UNIQUE NOT NULL,
   PRIMARY KEY ("id")
 );
 
 CREATE TABLE "items" (
   "id" serial,
-  "name" text,
-  "description" text,
-  "price" decimal(10, 2),
+  "name" TEXT NOT NULL,
+  "description" TEXT NOT NULL,
+  "price" decimal(10, 2) NOT NULL,
   "item_type_fk" int NOT NULL,
   "enchantment_fk" int,
   PRIMARY KEY ("id"),
@@ -99,6 +89,8 @@ VALUES ('Long Sword', 'A slightly used long sword. It''s warm to the touch.', 25
 INSERT INTO customers (first_name, last_name, profession_fk)
 VALUES ('Wiz', 'McWizington', 1),
        ('Biff', 'Sporg', 4);
+     
+UPDATE customers SET id = 1 WHERE first_name='Wiz';     
      
 insert into customers (first_name, last_name, profession_fk) values ('Ernesta', 'Mosby', 1);
 insert into customers (first_name, last_name, profession_fk) values ('Delbert', 'Yerby', 1);
@@ -226,3 +218,5 @@ insert into purchases (customer_fk, item_fk) values (21, 2);
 insert into purchases (customer_fk, item_fk) values (24, 2);
 insert into purchases (customer_fk, item_fk) values (6, 2);
 insert into purchases (customer_fk, item_fk) values (17, 1);
+
+SELECT * FROM customers;
