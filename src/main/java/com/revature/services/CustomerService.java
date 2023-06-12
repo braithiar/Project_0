@@ -52,9 +52,7 @@ public class CustomerService {
 
       index = 3;
     } else {
-      lastFormatted = new StringBuilder(
-        Character.toUpperCase(lNameChars[0])
-      );
+      lastFormatted.append(Character.toUpperCase(lNameChars[0]));
     }
 
     for (int i = index; i < lNameChars.length; ++i) {
@@ -65,7 +63,7 @@ public class CustomerService {
 
       lastFormatted.append(lNameChars[i]);
     }
-
+    System.out.println(firstFormatted + " " + lastFormatted);
     if (firstFormatted.length() > 0 && lastFormatted.length() > 0) {
       return cDAO.getCustomer(firstFormatted.toString(),
                               lastFormatted.toString());
@@ -87,7 +85,7 @@ public class CustomerService {
   }
 
   public Customer updateCustomer(Customer c) {
-    if (c != null && c.getId() >= 0 && c.getProfessionId() > 0) {
+    if (c != null && c.getId() > 0 && c.getProfessionId() > -1) {
       return cDAO.updateCustomer(c);
     }
 

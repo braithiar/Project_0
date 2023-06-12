@@ -42,7 +42,11 @@ public class Customer {
     this.id = id;
     this.firstName = firstName;
     this.lastName = lastName;
-    this.professionId = professionId;
+    if (professionId > 0) {
+      this.professionId = professionId;
+    } else {
+      this.professionId = -1;
+    }
     profession = null;
     purchases = null;
   }
